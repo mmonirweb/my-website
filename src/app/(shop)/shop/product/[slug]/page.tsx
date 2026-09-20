@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ShieldCheck, Truck, RefreshCw, Minus, Plus, Loader2, Heart } from 'lucide-react';
