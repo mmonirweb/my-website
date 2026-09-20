@@ -19,23 +19,23 @@ const nextConfig: NextConfig = {
         port: "8000",
         pathname: "/storage/**",
       },
-      // 2. Production Domain (লাইভ সার্ভারের জন্য)
+      // 2. Production Domains (NRG Solar Live Server)
       {
         protocol: "https",
-        hostname: "zarahmart.com",
+        hostname: "nrgsolarbd.com",
         pathname: "/storage/**",
       },
       {
         protocol: "http",
-        hostname: "zarahmart.com",
+        hostname: "nrgsolarbd.com",
         pathname: "/storage/**",
       },
       {
         protocol: "https",
-        hostname: "api.zarahmart.com",
+        hostname: "www.nrgsolarbd.com",
         pathname: "/storage/**",
       },
-      // 3. Universal wildcard: যেকোনো এক্সটার্নাল বা থার্ড-পার্টি সাইট থেকে ছবি আসার অনুমতি দিতে
+      // 3. Universal wildcard fallback
       {
         protocol: "https",
         hostname: "**",
