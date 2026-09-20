@@ -33,36 +33,41 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Cart Items List */}
           <div className="lg:col-span-8 space-y-4">
-            {cart.map((item) => (
-              <div key={item.id} className="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center justify-between gap-4 shadow-xs">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 rounded-xl overflow-hidden shrink-0 border border-slate-100">
-                    <img src={item.main_image || 'https://placehold.co/200x200/e2e8f0/64748b?text=Item'} alt={item.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm sm:text-base font-bold text-slate-800 line-clamp-1">{item.name}</h3>
-                    {item.sku && <p className="text-xs text-slate-400 mt-0.5">SKU: {item.sku}</p>}
-                    <p className="text-sm font-black text-emerald-600 mt-1">৳{item.selling_price.toFixed(2)}</p>
-                  </div>
-                </div>
+            {cart.map((item: any) => {
+              const itemPrice = Number(item?.special_price ?? item?.selling_price ?? item?.price ?? 0);
+              const itemImage = item?.main_image || item?.featured_image || item?.image || 'https://placehold.co/200x200/e2e8f0/64748b?text=Item';
 
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50 p-1">
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1.5 rounded-lg bg-white text-slate-600 hover:bg-slate-100">
-                      <Minus className="w-3.5 h-3.5" />
-                    </button>
-                    <span className="w-8 text-center text-xs font-bold text-slate-800">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1.5 rounded-lg bg-white text-slate-600 hover:bg-slate-100">
-                      <Plus className="w-3.5 h-3.5" />
-                    </button>
+              return (
+                <div key={item.id} className="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center justify-between gap-4 shadow-xs">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 rounded-xl overflow-hidden shrink-0 border border-slate-100">
+                      <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-base font-bold text-slate-800 line-clamp-1">{item.name}</h3>
+                      {item.sku && <p className="text-xs text-slate-400 mt-0.5">SKU: {item.sku}</p>}
+                      <p className="text-sm font-black text-emerald-600 mt-1">৳{itemPrice.toFixed(2)}</p>
+                    </div>
                   </div>
 
-                  <button onClick={() => removeFromCart(item.id)} className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50 p-1">
+                      <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="p-1.5 rounded-lg bg-white text-slate-600 hover:bg-slate-100 cursor-pointer">
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="w-8 text-center text-xs font-bold text-slate-800">{item.quantity}</span>
+                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1.5 rounded-lg bg-white text-slate-600 hover:bg-slate-100 cursor-pointer">
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <button onClick={() => removeFromCart(item.id)} className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition cursor-pointer">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Order Summary Sidebar */}
