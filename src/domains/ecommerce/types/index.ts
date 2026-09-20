@@ -52,3 +52,4 @@ export interface HomePageData {
   new_arrivals: Product[];
   top_brands: Brand[];
 }
+

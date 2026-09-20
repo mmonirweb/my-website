@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     console.error('Failed to load settings metadata:', err);
   }
 
-  const siteName = settingsData?.store_name || settingsData?.general?.store_name || 'Zarah Mart';
+  const siteName = settingsData?.store_name || settingsData?.general?.store_name || 'NRGSOLARBD';
   const tagline = settingsData?.tagline || settingsData?.general?.tagline || '';
   
   let faviconUrl = 
