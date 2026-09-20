@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/domains/auth/hooks/useAuth';
@@ -39,6 +39,23 @@ import {
   ShoppingBag,
   Receipt,
   PlusCircle,
+  CreditCard,
+  Wallet,
+  // New Added Icons
+  BookOpen,
+  Landmark,
+  ArrowDownLeft,
+  ArrowUpRight,
+  Sparkles,
+  TrendingUp,
+  Settings, // E-Commerce Settings Icon
+  Sliders,
+  Image as ImageIcon,
+  Tag,
+  ShoppingBag as ShoppingBagIcon,
+  Flame,
+  ListTree,
+  MessageSquare,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -50,6 +67,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { logout } = useAuth();
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  
+  // Hydration error বন্ধ করার জন্য mounted state
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const menuSections = [
     {
@@ -69,6 +93,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       items: [
         { name: 'Sales list', href: '/sales', icon: Receipt },
         { name: 'New Sales', href: '/sales/create', icon: PlusCircle },
+        { name: 'Sales Returns', href: '/sales-returns', icon: RotateCcw },
+        { name: 'Customer Payments', href: '/customer-payments', icon: CreditCard },
         { name: 'Customers', href: '/customers', icon: Users2 },
       ],
     },
@@ -79,6 +105,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         { name: 'Suppliers', href: '/suppliers', icon: UserCheck },
         { name: 'Purchase Orders', href: '/purchases', icon: FileText },
         { name: 'Purchase Returns', href: '/purchase-returns', icon: RotateCcw },
+        { name: 'Supplier Payments', href: '/supplier-payments', icon: Wallet },
       ],
     },
     {
@@ -88,6 +115,31 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         { name: 'Warehouses', href: '/warehouses', icon: Warehouse },
         { name: 'Current Inventory', href: '/inventory', icon: ClipboardList },
         { name: 'Stock Ledger', href: '/stock-history', icon: History },
+      ],
+    },
+    {
+      title: 'Financial Accounts',
+      icon: Landmark,
+      items: [
+        { name: 'Chart of Accounts', href: '/accounts/chart-of-accounts', icon: BookOpen },
+        { name: 'Bank & Cash Accounts', href: '/accounts/bank-cash-accounts', icon: Landmark },
+        { name: 'Journal Vouchers', href: '/accounts/journal-vouchers', icon: FileText },
+        { name: 'Income / Receipts', href: '/accounts/income', icon: ArrowDownLeft },
+        { name: 'Expenses / Payments', href: '/accounts/expenses', icon: ArrowUpRight },
+      ],
+    },
+    {
+      title: 'E-Commerce',
+      icon: ShoppingBag,
+      items: [
+        { name: 'Sliders', href: '/ecommerce/sliders', icon: Sliders },
+        { name: 'Banners', href: '/banners', icon: ImageIcon },
+        { name: 'Coupons', href: '/ecommerce/coupons', icon: Tag },
+        { name: 'Orders', href: '/orders', icon: ShoppingBagIcon },
+        { name: 'Flash Sales', href: '/ecommerce/flash-sales', icon: Flame },
+        { name: 'Attributes', href: '/ecommerce/attributes', icon: ListTree },
+        { name: 'Reviews', href: '/ecommerce/reviews', icon: MessageSquare },
+        { name: 'Settings', href: '/settings', icon: Settings },
       ],
     },
     {
@@ -113,7 +165,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       icon: Users,
       items: [{ name: 'Employees', href: '/employees', icon: UserPlus }],
     },
+    {
+      title: 'Reports & Analytics',
+      icon: TrendingUp,
+      items: [
+        { name: 'Financial Statements', href: '/reports/financial', icon: Sparkles },
+        { name: 'Sales Reports', href: '/reports/sales', icon: Receipt },
+        { name: 'Inventory Reports', href: '/reports/inventory', icon: ClipboardList },
+      ],
+    },
   ];
+
+  // Client-side এ মাউন্ট হওয়ার পূর্বে কিছুই রেন্ডার করবে না
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <>

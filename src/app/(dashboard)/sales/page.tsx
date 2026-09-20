@@ -1,19 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSales } from '@/domains/sales/hooks/useSales';
-import { Plus, Search, Eye, ShoppingBag, ShieldCheck, X } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Printer } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+// নতুন মাস্টার ইনভয়েস মডাল ইম্পোর্ট
+import MasterInvoiceModal from '@/domains/invoice/components/MasterInvoiceModal';
 
 export default function SalesPage() {
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [selectedAuditSale, setSelectedAuditSale] = useState<any | null>(null);
-  
-  const { sales, isLoading } = useSales({ search, page });
 
-  // Laravel pagination / Direct array API response safe extractor
-  const salesList = Array.isArray(sales)
+  // ইনভয়েস মডালের জন্য সিলেক্টেড ইনভয়েস নম্বর স্টেট
+  const [selectedInvoiceNo, setSelectedInvoiceNo] = useState<string | null>(null);
+
+  const salesHook = useSales({ search, page }) as any;
+  const { sales, isLoading } = salesHook;
+  const deleteSale = salesHook.deleteSale || salesHook.removeSale;
+
+  // Safe Array Extractor for API response
+  const rawSalesList = Array.isArray(sales)
     ? sales
     : Array.isArray(sales?.data)
     ? sales.data
@@ -21,6 +30,52 @@ export default function SalesPage() {
     ? sales.data.data
     : [];
 
+  // Robust Client-side Search Filtering fallback
+  const salesList = useMemo(() => {
+    if (!search.trim()) return rawSalesList;
+    const query = search.toLowerCase();
+    return rawSalesList.filter((sale: any) => {
+      const invoiceNo = (sale.invoice_no || '').toLowerCase();
+      const customerName = (sale.customer?.name || '').toLowerCase();
+      const customerPhone = (sale.customer?.phone || '').toLowerCase();
+      return invoiceNo.includes(query) || customerName.includes(query) || customerPhone.includes(query);
+    });
+  }, [rawSalesList, search]);
+
+  const handleEdit = (id: number | string) => {
+    router.push(`/sales/${id}`);
+  };
+
+  const handleDelete = async (sale: any) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete invoice "${sale.invoice_no}"? This action cannot be undone.`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      if (deleteSale) {
+        await deleteSale(sale.id);
+      } else {
+        alert('Delete API function is not configured in useSales hook.');
+      }
+    } catch (error: any) {
+      alert(error?.response?.data?.message || error?.message || 'Failed to delete sale');
+    }
+  };
+
+  // ইনভয়েস ওপেন হ্যান্ডলার (invoice_no সেট করবে)
+  const handleOpenMasterInvoice = (sale: any) => {
+    const invNo = sale.invoice_no || sale.invoice_number;
+    if (invNo) {
+      setSelectedInvoiceNo(invNo);
+    } else {
+      alert('Invoice number not found for this sale.');
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // Main Sales List View
+  // ---------------------------------------------------------------------------
   return (
     <div className="p-6 space-y-6 bg-slate-950 text-slate-100 min-h-screen">
       {/* Header Section */}
@@ -68,7 +123,7 @@ export default function SalesPage() {
                 <th className="px-6 py-4 text-right">Paid</th>
                 <th className="px-6 py-4 text-right">Due</th>
                 <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-center">Audit & Actions</th>
+                <th className="px-6 py-4 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
@@ -87,7 +142,15 @@ export default function SalesPage() {
               ) : (
                 salesList.map((sale: any) => (
                   <tr key={sale.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-6 py-4 font-mono font-semibold text-blue-400">{sale.invoice_no}</td>
+                    <td className="px-6 py-4 font-mono font-semibold">
+                      <button
+                        onClick={() => handleOpenMasterInvoice(sale)}
+                        className="text-blue-400 hover:text-blue-300 hover:underline cursor-pointer"
+                        title="Click to view full Invoice"
+                      >
+                        {sale.invoice_no}
+                      </button>
+                    </td>
                     <td className="px-6 py-4">
                       <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
                         sale.sale_type === 'COMMERCIAL' ? 'bg-amber-950/60 border-amber-800 text-amber-400' :
@@ -100,9 +163,9 @@ export default function SalesPage() {
                     </td>
                     <td className="px-6 py-4 font-medium text-slate-200">{sale.customer?.name}</td>
                     <td className="px-6 py-4 text-slate-400">{sale.sale_date}</td>
-                    <td className="px-6 py-4 text-right font-semibold text-slate-100">৳{Number(sale.grand_total).toFixed(2)}</td>
-                    <td className="px-6 py-4 text-right text-emerald-400">৳{Number(sale.paid_amount).toFixed(2)}</td>
-                    <td className="px-6 py-4 text-right text-rose-400">৳{Number(sale.due_amount).toFixed(2)}</td>
+                    <td className="px-6 py-4 text-right font-semibold text-slate-100">৳{Number(sale.grand_total || sale.net_payable || 0).toFixed(2)}</td>
+                    <td className="px-6 py-4 text-right text-emerald-400">৳{Number(sale.paid_amount || 0).toFixed(2)}</td>
+                    <td className="px-6 py-4 text-right text-rose-400">৳{Number(sale.due_amount || sale.due || 0).toFixed(2)}</td>
                     <td className="px-6 py-4 text-center">
                       <span className={`px-2.5 py-1 text-[11px] font-semibold rounded-full ${
                         sale.payment_status === 'PAID' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' :
@@ -114,11 +177,25 @@ export default function SalesPage() {
                     </td>
                     <td className="px-6 py-4 text-center flex items-center justify-center gap-2">
                       <button
-                        onClick={() => setSelectedAuditSale(sale)}
-                        title="View Enterprise Audit Trail"
-                        className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 transition-colors"
+                        onClick={() => handleOpenMasterInvoice(sale)}
+                        title="Print / View Invoice"
+                        className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-400 transition-colors cursor-pointer"
                       >
-                        <ShieldCheck className="w-4 h-4" />
+                        <Printer className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleEdit(sale.id)}
+                        title="Edit Sale Record"
+                        className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 transition-colors cursor-pointer"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(sale)}
+                        title="Delete Sale Record"
+                        className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-400 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>
@@ -129,42 +206,12 @@ export default function SalesPage() {
         </div>
       </div>
 
-      {/* Enterprise Audit Trail Modal */}
-      {selectedAuditSale && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl p-6 space-y-4 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2 text-emerald-400">
-                <ShieldCheck className="w-5 h-5" />
-                <h3 className="font-bold text-slate-100 text-lg">Audit Trail Log — {selectedAuditSale.invoice_no}</h3>
-              </div>
-              <button onClick={() => setSelectedAuditSale(null)} className="text-slate-400 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800/80 text-xs space-y-1">
-                <div className="flex justify-between text-slate-400">
-                  <span>Action: <strong className="text-emerald-400">ORDER CREATED</strong></span>
-                  <span>{new Date(selectedAuditSale.created_at).toLocaleString()}</span>
-                </div>
-                <p className="text-slate-300">Issued by User: <strong>{selectedAuditSale.created_by}</strong></p>
-                <p className="text-slate-500 font-mono">Sale Type: {selectedAuditSale.sale_type} | Channel: Direct ERP Engine</p>
-              </div>
-            </div>
-
-            <div className="pt-2 flex justify-end">
-              <button
-                onClick={() => setSelectedAuditSale(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
-              >
-                Close Audit View
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* মাস্টার ইনভয়েস মডাল */}
+      <MasterInvoiceModal
+        isOpen={!!selectedInvoiceNo}
+        invoiceNo={selectedInvoiceNo}
+        onClose={() => setSelectedInvoiceNo(null)}
+      />
     </div>
   );
 }

@@ -51,18 +51,26 @@ export default function ProductsPage() {
     }
   };
 
-  // Helper Function for Image Path Resolution
+  // Safe & Dynamic Image Path Resolution (Supports both Local & Live Environments)
   const getImageUrl = (product: any): string | null => {
     if (!product) return null;
     const path = product.main_image || product.image || product.image_url || product.image_path || product.photo || product.thumbnail;
-    if (!path) return null;
+    if (!path || typeof path !== 'string') return null;
     
+    // Direct Full URL or Base64 Image
     if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
       return path;
     }
     
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, '') || 'http://localhost:8000';
-    return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+    let baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, '') || '';
+    
+    // Fallback: If ENV variable is not configured, resolve host dynamically from browser window
+    if (!baseUrl && typeof window !== 'undefined') {
+      baseUrl = window.location.origin;
+    }
+
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    return baseUrl ? `${baseUrl}${cleanPath}` : cleanPath;
   };
 
   const fetchProducts = async () => {
