@@ -24,7 +24,7 @@ interface Product {
 }
 
 interface ProductActionButtonsProps {
-  product: Product;
+  product?: Product;
   quantity?: number;
   layout?: 'vertical' | 'horizontal';
   showBuyNow?: boolean;
@@ -42,9 +42,9 @@ export default function ProductActionButtons({
   const router = useRouter();
   const [isAdded, setIsAdded] = useState(false);
 
-  // প্রোডাক্টের যেকোনো স্টক প্রপার্টি চেক করার জন্য লজিক
+  // প্রোডাক্ট ও স্টক প্রপার্টি নিরাপদভাবে চেক করার জন্য লজিক
   const stockCount = Number(
-    product.stock ?? product.current_stock ?? product.total_stock ?? 0
+    product?.stock ?? product?.current_stock ?? product?.total_stock ?? 0
   );
   const isOutOfStock = stockCount <= 0;
 
@@ -53,7 +53,7 @@ export default function ProductActionButtons({
     e.preventDefault();
     e.stopPropagation();
 
-    if (isOutOfStock) return;
+    if (isOutOfStock || !product) return;
 
     addToCart(product, quantity);
     setIsAdded(true);
@@ -67,7 +67,7 @@ export default function ProductActionButtons({
     e.preventDefault();
     e.stopPropagation();
 
-    if (isOutOfStock) return;
+    if (isOutOfStock || !product) return;
 
     addToCart(product, quantity);
     router.push('/checkout');
