@@ -1,8 +1,7 @@
 import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import ProductCard from '@/components/ecommerce/ProductCard'; // অথবা আপনার নির্দিষ্ট প্রোডাক্ট কার্ড পাথ
+import type { Metadata } from 'next';
+import ProductCard from '@/components/ecommerce/ProductCard';
 
 interface Product {
   id: number;
@@ -43,6 +42,23 @@ async function getCategoryData(slug: string): Promise<CategoryData | null> {
     console.error('API Fetch Error:', error);
     return null;
   }
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const categoryData = await getCategoryData(resolvedParams.slug);
+
+  if (!categoryData) {
+    return {
+      title: 'Category Not Found',
+    };
+  }
+
+  return {
+    title: categoryData.name,
+    description: categoryData.description || `Browse our collection of ${categoryData.name}`,
+    robots: { index: true, follow: true },
+  };
 }
 
 export default async function CategoryPage({

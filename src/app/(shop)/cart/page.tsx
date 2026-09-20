@@ -16,10 +16,10 @@ export default function CartPage() {
         <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
           <ShoppingBag className="w-10 h-10" />
         </div>
-        <h2 className="text-xl font-bold text-slate-800 mb-2">{t('emptyCart')}</h2>
+        <h2 className="text-xl font-bold text-slate-800 mb-2">{t('emptyCart') || 'Your Cart is Empty'}</h2>
         <p className="text-sm text-slate-500 mb-6">আপনার পছন্দমতো পণ্য কার্টে যোগ করে কেনাকাটা শুরু করুন।</p>
         <Link href="/shop" className="inline-flex items-center gap-2 bg-emerald-600 text-white text-xs font-bold px-6 py-3.5 rounded-2xl shadow-md hover:bg-emerald-700 transition">
-          {t('continueShopping')} <ArrowRight className="w-4 h-4" />
+          {t('continueShopping') || 'Continue Shopping'} <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
     );
@@ -28,17 +28,18 @@ export default function CartPage() {
   return (
     <div className="bg-slate-50 min-h-screen py-10">
       <div className="container mx-auto px-4 max-w-6xl">
-        <h1 className="text-2xl font-extrabold text-slate-900 mb-6">{t('shoppingCart')} ({totalItems})</h1>
+        <h1 className="text-2xl font-extrabold text-slate-900 mb-6">
+          {t('shoppingCart') || 'Shopping Cart'} ({totalItems})
+        </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Cart Items List */}
           <div className="lg:col-span-8 space-y-4">
             {cart.map((item: any) => {
               const itemPrice = Number(item?.special_price ?? item?.selling_price ?? item?.price ?? 0);
               const itemImage = item?.main_image || item?.featured_image || item?.image || 'https://placehold.co/200x200/e2e8f0/64748b?text=Item';
 
               return (
-                <div key={item.id} className="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center justify-between gap-4 shadow-xs">
+                <div key={item.id} className="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex items-center justify-between gap-4 shadow-sm">
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 rounded-xl overflow-hidden shrink-0 border border-slate-100">
                       <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
@@ -70,25 +71,26 @@ export default function CartPage() {
             })}
           </div>
 
-          {/* Order Summary Sidebar */}
           <div className="lg:col-span-4">
-            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-xs space-y-4">
-              <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">{t('orderSummary')}</h3>
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4">
+              <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
+                {t('orderSummary') || 'Order Summary'}
+              </h3>
               <div className="flex justify-between text-sm text-slate-600">
-                <span>{t('subtotal')}</span>
+                <span>{t('subtotal') || 'Subtotal'}</span>
                 <span className="font-bold text-slate-900">৳{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm text-slate-600 pb-3 border-b border-slate-100">
-                <span>{t('deliveryCharge')}</span>
-                <span className="font-bold text-slate-900">{t('calculatedAtCheckout')}</span>
+                <span>{t('deliveryCharge') || 'Delivery Charge'}</span>
+                <span className="font-bold text-slate-900">{t('calculatedAtCheckout') || 'Calculated at checkout'}</span>
               </div>
               <div className="flex justify-between text-base font-extrabold text-slate-900 pt-1">
-                <span>{t('total')}</span>
+                <span>{t('total') || 'Total'}</span>
                 <span className="text-emerald-600">৳{subtotal.toFixed(2)}</span>
               </div>
 
               <Link href="/checkout" className="w-full mt-4 flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl bg-emerald-600 text-white font-bold text-sm shadow-lg hover:bg-emerald-700 transition">
-                {t('checkout')} <ArrowRight className="w-4 h-4" />
+                {t('checkout') || 'Proceed to Checkout'} <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>

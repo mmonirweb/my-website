@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface BannerItem {
@@ -82,7 +83,6 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
 
   return (
     <section className="container mx-auto px-4 my-3">
-      {/* ব্যানার ইমেজ যাতে ফুল শো করে এবং কেটে না যায় তার জন্য উপযুক্ত রেসপন্সিভ হাইট */}
       <div className="relative w-full h-40 sm:h-64 md:h-80 lg:h-96 rounded-xl overflow-hidden shadow-md bg-slate-900 group">
         
         {validBanners.map((banner: BannerItem, index: number) => {
@@ -98,19 +98,19 @@ export default function HeroBanner({ banners }: HeroBannerProps) {
                 isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
               }`}
             >
-              {/* object-fill ব্যবহার করা হয়েছে যাতে পুরো ইমেজটি স্ট্রেচ হয়ে কন্টেইনারের পুরো অংশ জুড়ে নিখুঁতভাবে বসে যায় */}
-              <img
+              <Image
                 src={rawImgUrl}
                 alt={banner.title || 'Hero Banner'}
-                className="w-full h-full object-fill object-center"
-                loading={index === 0 ? 'eager' : 'lazy'}
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                className="object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent pointer-events-none" />
             </div>
           );
         })}
 
-        {/* শুধুমাত্র এডমিন থেকে টাইটেল, সাবটাইটেল বা বাটন টেক্সট দেওয়া থাকলেই কন্টেন্ট রেন্ডার হবে */}
         {(title || subtitle || ctaText) && (
           <div className="absolute inset-0 z-20 flex flex-col justify-center p-6 sm:p-10 text-white pointer-events-none">
             <div className="max-w-md space-y-2 pointer-events-auto">

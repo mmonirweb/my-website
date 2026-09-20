@@ -9,7 +9,6 @@ import {
   Heart,
   User,
   Phone,
-  Sparkles,
   ShieldCheck,
   Menu,
   X,
@@ -23,10 +22,10 @@ import {
   Grid,
 } from 'lucide-react';
 
-// আপনার প্রজেক্টের সঠিক পাথ অনুযায়ী CartContext ইম্পอร์ต করুন
+// Cart Context
 import { useCart } from '@/context/CartContext';
 
-// Correct Path: src/domains/settings/...
+// Settings Service
 import { settingService } from '@/domains/settings/services/settingService';
 
 interface Category {
@@ -136,7 +135,7 @@ export default function Header({
       <div className="bg-emerald-100/70 backdrop-blur-md text-emerald-900 text-xs py-2 px-4 border-b border-emerald-200/50">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <span className="inline-flex items-center gap-1.5 bg-amber-100/80 text-amber-900 font-medium px-3 py-1 rounded-full border border-amber-300/60 text-[11px] tracking-wide shadow-xs">
+            <span className="inline-flex items-center gap-1.5 bg-amber-100/80 text-amber-900 font-medium px-3 py-1 rounded-full border border-amber-300/60 text-[11px] tracking-wide shadow-sm">
               <Flame className="w-3.5 h-3.5 text-amber-600 fill-amber-500 animate-pulse" /> Hot Deal Offer
             </span>
             <p className="hidden md:inline-block text-emerald-800 font-normal">
@@ -194,7 +193,7 @@ export default function Header({
                     height={64}
                     unoptimized={true}
                     priority
-                    className="object-contain max-h-14 md:max-h-16 w-auto group-hover:scale-105 transition duration-300 filter drop-shadow-xs"
+                    className="object-contain max-h-14 md:max-h-16 w-auto group-hover:scale-105 transition duration-300 filter drop-shadow-sm"
                   />
                 </div>
               ) : (
@@ -215,7 +214,7 @@ export default function Header({
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   placeholder="Search products or upload image to search..."
-                  className="w-full bg-white/80 border border-emerald-300 rounded-full py-3 pl-11 pr-24 text-sm font-normal text-emerald-950 placeholder-emerald-600/60 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition shadow-xs backdrop-blur-md"
+                  className="w-full bg-white/80 border border-emerald-300 rounded-full py-3 pl-11 pr-24 text-sm font-normal text-emerald-950 placeholder-emerald-600/60 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-400/20 transition shadow-sm backdrop-blur-md"
                 />
                 <Search className="w-4 h-4 text-emerald-600 absolute left-4 top-1/2 -translate-y-1/2" />
 
@@ -232,7 +231,7 @@ export default function Header({
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     title="Search by Image"
-                    className="p-1.5 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-900 hover:text-emerald-950 transition flex items-center gap-1 px-2.5 text-xs border border-emerald-300 shadow-2xs cursor-pointer"
+                    className="p-1.5 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-900 hover:text-emerald-950 transition flex items-center gap-1 px-2.5 text-xs border border-emerald-300 shadow-sm cursor-pointer"
                   >
                     <Camera className="w-3.5 h-3.5 text-amber-700" />
                     <span className="text-[11px] font-medium hidden lg:inline">Image</span>
@@ -310,7 +309,7 @@ export default function Header({
               href="/account"
               className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-emerald-200/50 transition group"
             >
-              <div className="w-10 h-10 rounded-xl bg-white group-hover:bg-amber-400 group-hover:text-amber-950 flex items-center justify-center text-emerald-800 transition shadow-xs border border-emerald-200">
+              <div className="w-10 h-10 rounded-xl bg-white group-hover:bg-amber-400 group-hover:text-amber-950 flex items-center justify-center text-emerald-800 transition shadow-sm border border-emerald-200">
                 <User className="w-4 h-4" />
               </div>
               <div className="hidden lg:flex flex-col text-left">
@@ -323,11 +322,11 @@ export default function Header({
               href="/wishlist"
               className="relative p-2 rounded-xl hover:bg-emerald-200/50 transition text-emerald-900 group"
             >
-              <div className="w-10 h-10 rounded-xl bg-white group-hover:bg-rose-50 group-hover:text-rose-500 flex items-center justify-center transition shadow-xs border border-emerald-200">
+              <div className="w-10 h-10 rounded-xl bg-white group-hover:bg-rose-50 group-hover:text-rose-500 flex items-center justify-center transition shadow-sm border border-emerald-200">
                 <Heart className="w-4 h-4" />
               </div>
               {wishlistCount > 0 && (
-                <span className="absolute top-1 right-1 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white shadow-xs animate-bounce">
+                <span className="absolute top-1 right-1 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white shadow-sm animate-bounce">
                   {wishlistCount}
                 </span>
               )}
@@ -339,13 +338,13 @@ export default function Header({
             >
               <div className="relative">
                 <ShoppingBag className="w-4 h-4 text-amber-950 transition" />
-                <span className="absolute -top-2.5 -right-2.5 bg-emerald-950 text-amber-300 text-[10px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center border border-amber-300 transition shadow-2xs">
+                <span className="absolute -top-2.5 -right-2.5 bg-emerald-950 text-amber-300 text-[10px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center border border-amber-300 transition shadow-sm">
                   {totalItems}
                 </span>
               </div>
               <div className="hidden sm:flex flex-col text-left">
                 <span className="text-[8px] text-amber-900 font-extrabold uppercase tracking-wider leading-none">Cart</span>
-                <span className="text-xs font-black text-amber-950 mt-0.5">৳{subtotal.toFixed(2)}</span>
+                <span className="text-xs font-black text-amber-950 mt-0.5">৳{(subtotal || 0).toFixed(2)}</span>
               </div>
             </Link>
           </div>
@@ -361,14 +360,14 @@ export default function Header({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search or upload image..."
-              className="w-full bg-white border border-emerald-300 rounded-full py-2.5 pl-10 pr-4 text-xs font-normal text-emerald-950 placeholder-emerald-600 focus:outline-none focus:border-amber-500 shadow-2xs"
+              className="w-full bg-white border border-emerald-300 rounded-full py-2.5 pl-10 pr-4 text-xs font-normal text-emerald-950 placeholder-emerald-600 focus:outline-none focus:border-amber-500 shadow-sm"
             />
             <Search className="w-4 h-4 text-emerald-600 absolute left-3.5 top-3" />
           </div>
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="p-2.5 bg-white rounded-full text-emerald-900 border border-emerald-300 flex items-center justify-center shadow-2xs cursor-pointer"
+            className="p-2.5 bg-white rounded-full text-emerald-900 border border-emerald-300 flex items-center justify-center shadow-sm cursor-pointer"
           >
             <Camera className="w-4 h-4 text-amber-700" />
           </button>
@@ -379,7 +378,7 @@ export default function Header({
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex">
           <div 
-            className="fixed inset-0 bg-emerald-950/20 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-emerald-950/20 backdrop-blur-sm transition-opacity"
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
@@ -402,7 +401,6 @@ export default function Header({
                     <FolderTree className="w-3.5 h-3.5" /> Categories
                   </div>
                   <div className="rounded-xl p-1 max-h-60 overflow-y-auto space-y-1">
-                    {/* Updated Link to /shop */}
                     <Link
                       href="/shop"
                       onClick={() => setIsMobileMenuOpen(false)}

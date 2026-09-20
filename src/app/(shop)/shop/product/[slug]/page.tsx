@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ShieldCheck, Truck, RefreshCw, Minus, Plus, Loader2, Heart } from 'lucide-react';
 import { apiClient } from '@/lib/axios';
-import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
 import ProductActionButtons from '@/components/ecommerce/ProductActionButtons';
 
@@ -36,7 +35,6 @@ interface Product {
 
 export default function ProductDetailsPage() {
   const params = useParams();
-  const router = useRouter();
   const slug = params?.slug;
 
   const { t } = useLanguage();
@@ -48,7 +46,6 @@ export default function ProductDetailsPage() {
   const [activeTab, setActiveTab] = useState<'description' | 'spec'>('description');
   const [isWishlisted, setIsWishlisted] = useState<boolean>(false);
 
-  // Zoom effect states
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
   const [bgPosition, setBgPosition] = useState<string>('0% 0%');
   const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -86,7 +83,7 @@ export default function ProductDetailsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white">
         <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-3" />
-        <p className="text-xs font-semibold text-slate-500">{t('loadingDetails')}</p>
+        <p className="text-xs font-semibold text-slate-500">{t('loadingDetails') || 'Loading...'}</p>
       </div>
     );
   }
@@ -94,10 +91,10 @@ export default function ProductDetailsPage() {
   if (!product) {
     return (
       <div className="container mx-auto px-4 py-24 text-center">
-        <h2 className="text-xl font-bold text-slate-800 mb-2">{t('productNotFound')}</h2>
-        <p className="text-sm text-slate-500 mb-4">{t('productNotFoundDesc')}</p>
+        <h2 className="text-xl font-bold text-slate-800 mb-2">{t('productNotFound') || 'Product Not Found'}</h2>
+        <p className="text-sm text-slate-500 mb-4">{t('productNotFoundDesc') || 'The product you are looking for does not exist.'}</p>
         <a href="/shop" className="inline-block bg-emerald-600 text-white text-xs font-bold px-6 py-3 rounded-xl shadow-md hover:bg-emerald-700 transition">
-          {t('backToShop')}
+          {t('backToShop') || 'Back to Shop'}
         </a>
       </div>
     );
@@ -121,7 +118,6 @@ export default function ProductDetailsPage() {
     ...rawGallery
   ].filter(Boolean) as string[];
 
-  // Calculate total stock supporting inventories, total_stock, stock_quantity, and stock fields
   const totalStock = Number(
     product?.total_stock ?? 
     (Array.isArray(product?.inventories) && product.inventories.length > 0
@@ -134,13 +130,9 @@ export default function ProductDetailsPage() {
   return (
     <div className="bg-slate-50 min-h-screen pt-0 pb-8">
       <div className="container mx-auto px-4 max-w-7xl pt-0">
-
-        {/* Top Main Grid */}
         <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-10 mb-8">
           
-          {/* Left: Image Gallery & Zoom (5 Cols) */}
           <div className="lg:col-span-5 flex flex-col sm:flex-row gap-4 items-center sm:items-start">
-            {/* Thumbnail List (Vertical on Left) */}
             {imagesList.length > 1 && (
               <div className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-y-auto max-h-[380px] pb-2 sm:pb-0 scrollbar-thin shrink-0 order-2 sm:order-1">
                 {imagesList.map((img, idx) => (
@@ -155,7 +147,6 @@ export default function ProductDetailsPage() {
               </div>
             )}
 
-            {/* Main Zoomable Image Container */}
             <div 
               ref={imageContainerRef}
               onMouseEnter={() => setIsZoomed(true)}
@@ -169,7 +160,6 @@ export default function ProductDetailsPage() {
                 className={`w-full h-full object-contain transition-opacity duration-200 ${isZoomed ? 'opacity-0' : 'opacity-100'}`}
               />
 
-              {/* Zoom Lens View Layer */}
               {isZoomed && (
                 <div 
                   className="absolute inset-0 bg-no-repeat pointer-events-none bg-contain bg-center"
@@ -195,19 +185,16 @@ export default function ProductDetailsPage() {
             </div>
           </div>
 
-          {/* Right: Product Info & Actions (7 Cols) */}
           <div className="lg:col-span-7 flex flex-col justify-between">
             <div className="space-y-4">
-
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 tracking-tight leading-snug pb-1 pt-2">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug pb-1 pt-2">
                 {product.name}
               </h1>
 
               <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-slate-500">
                 {product.sku && <span>SKU: <strong className="text-slate-700">{product.sku}</strong></span>}
-                {product.brand?.name && <span>{t('brand')}: <strong className="text-slate-700">{product.brand.name}</strong></span>}
+                {product.brand?.name && <span>Brand: <strong className="text-slate-700">{product.brand.name}</strong></span>}
                 
-                {/* Stock Status Badge moved next to brand/sku */}
                 <div>
                   {isStockAvailable ? (
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -238,9 +225,8 @@ export default function ProductDetailsPage() {
                 </p>
               )}
 
-              {/* Quantity Counter */}
               <div className="space-y-2 pt-1">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">{t('quantity')}</label>
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Quantity</label>
                 <div className="flex items-center">
                   <div className="flex items-center border border-slate-200 rounded-2xl bg-slate-50 p-1.5 shadow-xs">
                     <button 
@@ -259,10 +245,8 @@ export default function ProductDetailsPage() {
                   </div>
                 </div>
               </div>
-
             </div>
 
-            {/* Reusable Product Action Buttons Component */}
             <div className="pt-4 mt-4 border-t border-slate-100 max-w-xl">
               <ProductActionButtons 
                 product={product as any} 
@@ -271,26 +255,23 @@ export default function ProductDetailsPage() {
                 showBuyNow={true} 
               />
             </div>
-
           </div>
         </div>
 
-        {/* Bottom Details Tabs & Trust Badges */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
           <div className="lg:col-span-8 bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-10">
             <div className="flex items-center gap-6 border-b border-slate-100 pb-4 mb-6">
               <button 
                 onClick={() => setActiveTab('description')}
                 className={`text-sm font-bold pb-3 border-b-2 transition cursor-pointer ${activeTab === 'description' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-400 hover:text-slate-700'}`}
               >
-                {t('description')}
+                Description
               </button>
               <button 
                 onClick={() => setActiveTab('spec')}
                 className={`text-sm font-bold pb-3 border-b-2 transition cursor-pointer ${activeTab === 'spec' ? 'border-emerald-600 text-emerald-600' : 'border-transparent text-slate-400 hover:text-slate-700'}`}
               >
-                {t('specifications')}
+                Specifications
               </button>
             </div>
 
@@ -305,18 +286,18 @@ export default function ProductDetailsPage() {
             ) : (
               <div className="text-sm text-slate-600 space-y-3">
                 <div className="flex justify-between py-3 border-b border-slate-100">
-                  <span className="font-semibold text-slate-700">{t('brand')}</span>
+                  <span className="font-semibold text-slate-700">Brand</span>
                   <span className="text-slate-900 font-medium">{product.brand?.name || 'Generic'}</span>
                 </div>
                 {product.weight !== undefined && product.weight > 0 && (
                   <div className="flex justify-between py-3 border-b border-slate-100">
-                    <span className="font-semibold text-slate-700">{t('weight')}</span>
+                    <span className="font-semibold text-slate-700">Weight</span>
                     <span className="text-slate-900 font-medium">{product.weight} kg</span>
                   </div>
                 )}
                 {product.barcode && (
                   <div className="flex justify-between py-3 border-b border-slate-100">
-                    <span className="font-semibold text-slate-700">{t('barcode')}</span>
+                    <span className="font-semibold text-slate-700">Barcode</span>
                     <span className="text-slate-900 font-medium">{product.barcode}</span>
                   </div>
                 )}
@@ -324,17 +305,15 @@ export default function ProductDetailsPage() {
             )}
           </div>
 
-          {/* Trust Badges Sidebar */}
           <div className="lg:col-span-4 space-y-4">
             <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-8 space-y-6">
-              
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0 shadow-xs">
                   <Truck className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900">{t('fastDelivery')}</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">{t('fastDeliveryDesc')}</p>
+                  <h4 className="text-xs font-bold text-slate-900">Fast Delivery</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Reliable shipping across the country.</p>
                 </div>
               </div>
 
@@ -343,8 +322,8 @@ export default function ProductDetailsPage() {
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900">{t('originalProduct')}</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">{t('originalProductDesc')}</p>
+                  <h4 className="text-xs font-bold text-slate-900">100% Original</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Guaranteed authentic quality products.</p>
                 </div>
               </div>
 
@@ -353,16 +332,13 @@ export default function ProductDetailsPage() {
                   <RefreshCw className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900">{t('easyReturn')}</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">{t('easyReturnDesc')}</p>
+                  <h4 className="text-xs font-bold text-slate-900">Easy Returns</h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Hassle-free return policy.</p>
                 </div>
               </div>
-
             </div>
           </div>
-
         </div>
-
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import { settingService } from '@/domains/settings/services/settingService';
 import { ecommerceService } from '@/domains/ecommerce/services/ecommerceService';
 import { Category } from '@/domains/ecommerce/types';
 import { CartProvider } from '@/context/CartContext';
-import { LanguageProvider } from '@/context/LanguageContext'; // ১. LanguageProvider ইমপোর্ট করা হলো
+import { LanguageProvider } from '@/context/LanguageContext';
 
 export async function generateMetadata(): Promise<Metadata> {
   let settingsData: any = null;
@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   const siteName = settingsData?.store_name || settingsData?.general?.store_name || 'NRGSOLARBD';
-  const tagline = settingsData?.tagline || settingsData?.general?.tagline || '';
+  const tagline = settingsData?.tagline || settingsData?.general?.tagline || 'Shop the best products online';
   
   let faviconUrl = 
     settingsData?.favicon || 
@@ -32,11 +32,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: {
-      // এখানে ডিফল্ট টাইটেল হিসেবে সাইটের নাম বা ট্যাগলাইন থাকবে
       default: tagline ? `${siteName} - ${tagline}` : siteName,
-      // সাব-পেজ থেকে টাইটেল আসলে তা এখানে `%s` এর জায়গায় বসে যাবে (যেমন: Shop | Zarah Mart)
       template: `%s | ${siteName}`,
     },
+    description: tagline,
+    robots: { index: true, follow: true },
     icons: faviconUrl
       ? {
           icon: faviconUrl,
@@ -62,7 +62,7 @@ export default async function ShopLayout({
   }
 
   return (
-    <LanguageProvider> {/* ২. LanguageProvider দিয়ে র‍্যাপ করা হলো */}
+    <LanguageProvider>
       <CartProvider>
         <div className="min-h-screen flex flex-col bg-slate-50/50">
           <EcommerceHeader categories={categories} />
